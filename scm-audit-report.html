@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<script src="bower_components/vss-web-extension-sdk/lib/VSS.SDK.min.js"></script>
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <title>Title</title>
+    <style>
+        body,form,menu,dir,fieldset,blockquote,p,pre,ul,ol,dl,dd,h1,h2,h3,h4,h5,h6{padding:0;margin:0;}
+        html,body{height:100%;width:100%;color: #333333;background:#f2f2f2;-webkit-tap-highlight-color :rgba(0, 0, 0, 0);}
+        a{-webkit-tap-highlight-color :rgba(0, 0, 0, 0);}
+        body{font-size:80%;line-height:1.5;font-family:"\5FAE\8F6F\96C5\9ED1","Helvetica Neue", Helvetica, STHeiTi, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+
+        .w1000{width:1000px;margin:0 auto;background:#fff;overflow:hidden;}
+        .g15{width:600px;}
+        .g10{width:400px;}
+        .w60{width:60%;}
+        .w40{width:40%;}
+        .tr{text-align:right;}
+        .f50{font-size:50px;}
+        .top_bar,.bottom_bar{margin:20px 50px;overflow:hidden;}
+        .left_column{float:left;display:inline;}
+        .right_bar{float:right;display:inline;}
+
+        dl{margin-bottom:20px;}
+        dt{font-weight:700;}
+        dd p{border-bottom:#333 1px solid;line-height:24px;padding:0 10px;width:150px;cursor:pointer;}
+        dd p:hover{font-weight:700;background:rgba(0,0,0,.1);}
+
+        .box{display:none;position:relative;border-left:#333 1px solid;padding:20px 30px;overflow:hidden;}
+        .box.on{display:block;}
+        .arrow{position:absolute;right:10px;bottom:10px;display:inline-block;width: 10px;height: 10px;border-top: 1px solid #333;border-right: 1px solid #333;transform: rotate(-45deg);}
+        .arrow.on{transform: rotate(135deg);}
+
+    </style>
+   	<script src="bower_components/vss-web-extension-sdk/lib/VSS.SDK.min.js"></script>
+    <script type="text/javascript">
+	    var globalToken;
+        VSS.init({
+            explicitNotifyLoaded: true,
+			usePlatformStyles: true
+        });
+		
+		VSS.require(["VSS/Authentication/Services"],
+    function (VSS_Auth_Service) {
+        VSS.getAccessToken().then(function(token){
+            // Format the auth header
+            var authHeader = VSS_Auth_Service.authTokenManager.getAuthorizationHeader(token);
+             console.log(JSON.stringify(authHeader));
+            // Add token as an Authorization header to your request
+        });
+    });
+		 VSS.ready(function() {
+             VSS.getAppToken().then(function(token){
+			 globalToken = JSON.stringify(token.token)
+		 	 console.log(JSON.stringify(token));
+             $.ajax({
+                        type: "GET",
+                        //url: "https://dev.azure.com/webbwei/_apis/projects/"+VSS.getWebContext().project.id+"?api-version=5.0",
+						url: "https://dev.azure.com/webbwei/_apis/projects?api-version=5.0",
+                       	contentType:"application/json;charset=utf-8",
+                        dataType: "json",
+                      //  headers: { "Authorization": JSON.stringify(token.token) },
+					    headers: {"Authorization":btoa("webbwei" + ":" + JSON.stringify(token.token))},
+						success:function(res){
+						  console.log("projects success");
+		                  console.log(JSON.stringify(res));
+						  document.getElementById("topic").options.length=0;
+						  document.getElementById("topic").options.add(new Option(VSS.getWebContext().project.name,VSS.getWebContext().project.id)); 
+						  renderMembers(VSS.getWebContext().project.name,VSS.getWebContext().project.id);
+		               },
+	                   error:function(e){
+					     console.log("get project error");
+		                 console.log(JSON.stringify(e.responseText));
+	                   }
+                    });
+				VSS.notifyLoadSucceeded();			
+            });
+         });
+		
+	 function renderMembers(projectName,projectID){ 			
+	  console.log("into renderMember");
+	  console.log(globalToken);
+	  
+	     VSS.init({
+            explicitNotifyLoaded: true,
+			usePlatformStyles: true
+         });
+		
+		
+		
+		 VSS.ready(function() {
+             VSS.getAppToken().then(function(token){
+			 globalToken = JSON.stringify(token.token)
+		 	 console.log(JSON.stringify(token));
+             $.ajax({
+                        type: "GET",
+                        //url: "https://dev.azure.com/webbwei/_apis/projects/"+VSS.getWebContext().project.id+"?api-version=5.0",
+						url: "https://dev.azure.com/webbwei/_apis/projects?api-version=5.0",
+                       	contentType:"application/json;charset=utf-8",
+                        dataType: "json",
+                        headers: { "Authorization": JSON.stringify(token.token) },
+					    //headers: {"Authorization":btoa("webbwei" + ":" + "5gb6vndjq47yzfs7hwmszfmt3ngdhi5tzqin7mu5nzgpn3cjwk7a")},
+						success:function(res){
+						  console.log("projects success");
+		                  console.log(JSON.stringify(res));
+						  document.getElementById("topic").options.length=0;
+						  document.getElementById("topic").options.add(new Option(VSS.getWebContext().project.name,VSS.getWebContext().project.id)); 
+						  renderMembers(VSS.getWebContext().project.name,VSS.getWebContext().project.id);
+		               },
+	                   error:function(e){
+					     console.log("get project error");
+		                 console.log(JSON.stringify(e.responseText));
+	                   }
+                    });
+				VSS.notifyLoadSucceeded();			
+            });
+         });	
+	 }
+       	
+	
+	
+    </script>
+</head>
+<body>
+	<div class="widget">
+		<h2 class="title"></h1>
+	</div>
+<div class="w1000">
+    <div class="left_column g15">
+        <div class="top_bar">
+            <div class="left_column w60">
+                <dl>
+			  	<h1><span id="projectID"></span></h1>
+                    <dt>Topic Name</dt>
+                    <dd>
+                        <select id="topic">
+                            <option value ="volvo">Volvo</option>
+                            <option value ="saab">Saab</option>
+                            <option value="opel">Opel</option>
+                            <option value="audi">Audi</option>
+                        </select>
+                    </dd>
+                </dl>
+
+                <dl>
+                    <dt>Date Range</dt>
+                    <dd>
+                        <div>1111</div>
+                        <div>222</div>
+                    </dd>
+                </dl>
+
+                <dl>
+                    <dt>Name</dt>
+                    <dd id="name_sele">
+                        <p>Jiyong Zhang</p>
+                        <p>Shuangshuang Liu</p>
+                        <p>Zhiqin Zhu</p>
+                        <p>Sunny Zhao</p>
+                        <p>Xianbo Gong</p>
+                        <p>Jia Qiu</p>
+                        <p>Guangrong Tong</p>
+                    </dd>
+                </dl>
+
+
+            </div>
+            <div class="right_bar w40">
+                <h3># of Commits</h3>
+                <div class="f50 tr">203</div>
+
+                <h3># of Commits</h3>
+                <div class="tr">
+                    <p>23</p>
+                    <p>25</p>
+                    <p>43</p>
+                    <p>29</p>
+                    <p>3</p>
+                    <p>33</p>
+                    <p>35</p>
+                </div>
+            </div>
+        </div>
+        <div class="bottom_bar">一张图片</div>
+    </div>
+    <div class="right_bar g10">
+        <div id="show_con">
+            <div class="box on">
+                <h2>Changeset</h2>
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+            <div class="box">
+                222
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+            <div class="box">333
+
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+            <div class="box">444
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+            <div class="box">555
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+            <div class="box">6666
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+            <div class="box">7777
+                <p>"SNC 20200507</p>
+                <p>smile zhang created #2189, 2020/5/7 (23 hours ago)"</p>
+
+                <p>"SNC changes 20200507</p>
+                <p>smile zhang created #2188, 2020/5/7"</p>
+
+                <div class="arrow"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /**
+     * @param b 点击按钮，点击后获取index值
+     * @param c 显示内容，根据b的index值显示c中对应index内容
+     * @param e 事件。可以点击"click"，鼠标移入"mouseover"等js通用事件
+     */
+    function sel(b,c,e){
+        $(b).on(e,function(){
+            var ind = $(this).index();
+            $(c).eq(ind).addClass("on").siblings().removeClass("on")
+        })
+
+    };
+
+    function updown(b){
+
+        $(b).click(function(){
+            var h = $(this).parent().height();
+            if(h>20){
+                //console.log(h)
+                $(this).addClass("on").parent().animate({height:"8px"},300);
+            } else {
+                $(this).removeClass("on").parent().removeAttr("style")
+            }
+        })
+    }
+
+
+    $(function(){
+        sel("#name_sele p","#show_con .box","click")
+        updown(".arrow")
+    })
+</script>
+</body>
+</html>
